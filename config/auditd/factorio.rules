@@ -1,0 +1,63 @@
+# ==============================================================================
+# Factorio Tech Solutions - Reglas de Auditoría del Kernel (auditd)
+# Ubicación habitual: /etc/audit/rules.d/factorio.rules
+# Recargar con: sudo augenrules --load
+# ==============================================================================
+
+# Eliminar todas las reglas previas antes de cargar las nuevas
+-D
+
+# Establecer tamaño del búfer en memoria (en mensajes)
+-b 8192
+
+# Acción ante fallo del buffer (1 = imprimir mensaje en dmesg)
+-f 1
+
+# ------------------------------------------------------------------------------
+# 1. Auditoría de Identidad, Cuentas y Privilegios
+# ------------------------------------------------------------------------------
+-w /etc/passwd -p wa -k identity_changes
+-w /etc/shadow -p wa -k identity_changes
+-w /etc/group -p wa -k identity_changes
+-w /etc/gshadow -p wa -k identity_changes
+-w /etc/security/opasswd -p wa -k identity_changes
+
+# Modificaciones en la configuración de sudo
+-w /etc/sudoers -p wa -k sudo_changes
+-w /etc/sudoers.d/ -p wa -k sudo_changes
+
+# ------------------------------------------------------------------------------
+# 2. Auditoría de Servicios de Red y Seguridad Perimetral
+# ------------------------------------------------------------------------------
+# Archivos de configuración de SSH
+-w /etc/ssh/sshd_config -p wa -k sshd_config_changes
+-w /etc/ssh/sshd_config.d/ -p wa -k sshd_config_changes
+
+# Reglas de cortafuegos UFW y configuración de red
+-w /etc/ufw/ -p wa -k firewall_changes
+-w /etc/netplan/ -p wa -k network_config_changes
+-w /etc/network/ -p wa -k network_config_changes
+
+# ------------------------------------------------------------------------------
+# 3. Auditoría de Factorio Tech Solutions
+# ------------------------------------------------------------------------------
+# Detección de lectura o modificación del archivo confidencial .env
+-w /opt/factorio/app/.env -p rwa -k factorio_env_access
+
+# Modificaciones en la base de datos de producción
+-w /opt/factorio/app/data/ -p wa -k factorio_data_modification
+
+# ------------------------------------------------------------------------------
+# 4. Auditoría de Llamadas al Sistema Críticas (Syscalls)
+# ------------------------------------------------------------------------------
+# Inserción y eliminación de módulos del kernel (detección de rootkits)
+-a always,exit -F arch=b64 -S init_module -S delete_module -S finit_module -k kernel_modules
+-a always,exit -F arch=b32 -S init_module -S delete_module -S finit_module -k kernel_modules
+
+# Alteración de la fecha/hora del sistema (intentos de evadir logs cronológicos)
+-a always,exit -F arch=b64 -S adjtimex -S settimeofday -S clock_settime -k time_modification
+-a always,exit -F arch=b32 -S adjtimex -S settimeofday -S clock_settime -k time_modification
+
+# Comandos de elevación de privilegios (uso de su o sudo)
+-a always,exit -F path=/usr/bin/sudo -F perm=x -k privilege_escalation
+-a always,exit -F path=/usr/bin/su -F perm=x -k privilege_escalation

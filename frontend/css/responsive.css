@@ -1,0 +1,138 @@
+/* ==========================================================================
+   Responsive Breakpoints & Mobile Navigation
+   ========================================================================== */
+
+/* Tablet & Smaller Desktop (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .strategy-321-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile & Small Tablets (max-width: 768px) */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    box-shadow: none;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 10px 0 25px rgba(0, 0, 0, 0.7);
+  }
+
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: calc(var(--z-sidebar) - 1);
+    backdrop-filter: blur(3px);
+  }
+
+  .sidebar-backdrop.active {
+    display: block;
+  }
+
+  .main-wrapper {
+    margin-left: 0;
+  }
+
+  .mobile-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .content-container {
+    padding: 16px 14px 40px;
+  }
+
+  .grid-4, .grid-3, .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .page-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .navbar-subtitle {
+    display: none;
+  }
+
+  .logs-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .logs-filter-bar .input,
+  .logs-filter-bar .select,
+  .logs-filter-bar .btn {
+    width: 100%;
+  }
+
+  .ai-input-wrap {
+    flex-direction: column;
+  }
+
+  .settings-nav {
+    padding-bottom: 8px;
+  }
+
+  .metric-card {
+    padding: 16px;
+  }
+
+  .metric-value {
+    font-size: 1.5rem;
+  }
+
+  .modal-window {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .toast-container {
+    left: 14px;
+    right: 14px;
+    bottom: 16px;
+  }
+
+  .toast {
+    min-width: unset;
+    width: 100%;
+  }
+}
+
+/* Very small screens (<480px) */
+@media (max-width: 480px) {
+  .top-navbar {
+    padding: 0 14px;
+  }
+
+  .navbar-page-title {
+    font-size: 1.05rem;
+  }
+
+  .log-stat-pill {
+    min-width: 100%;
+  }
+}

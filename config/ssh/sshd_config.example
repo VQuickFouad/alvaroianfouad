@@ -1,0 +1,93 @@
+# ==============================================================================
+# Factorio Tech Solutions - Configuración Blindada de OpenSSH Server
+# Ubicación de referencia: /etc/ssh/sshd_config o /etc/ssh/sshd_config.d/99-hardening.conf
+# ==============================================================================
+# Directrices de seguridad basadas en CIS Benchmark y directrices NIST SP 800-123.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Parámetros de Red y Escucha
+# ------------------------------------------------------------------------------
+# Se recomienda un puerto no estándar para reducir el 98% del ruido de escáneres automáticos.
+Port 2222
+# Forzar únicamente protocolo IPv4 si no se utiliza IPv6 en la empresa
+AddressFamily inet
+# Escuchar en todas las interfaces de red del servidor
+ListenAddress 0.0.0.0
+
+# ------------------------------------------------------------------------------
+# 2. Autenticación Criptográfica
+# ------------------------------------------------------------------------------
+# Desactivar acceso directo al usuario root
+PermitRootLogin no
+
+# Desactivar completamente la autenticación mediante contraseñas interactivas
+PasswordAuthentication no
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+KbdInteractiveAuthentication no
+
+# Forzar autenticación basada exclusivamente en llaves públicas asimétricas
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys
+
+# Restringir los usuarios y grupos autorizados para iniciar sesión
+# AJUSTAR AL NOMBRE DEL USUARIO ADMINISTRADOR DE SU SISTEMA
+AllowUsers sysadmin factorio
+# AllowGroups sudo
+
+# ------------------------------------------------------------------------------
+# 3. Mitigación de Fuerza Bruta y Tiempos de Conexión
+# ------------------------------------------------------------------------------
+# Tiempo máximo para completar la autenticación (30 segundos)
+LoginGraceTime 30
+
+# Número máximo de intentos fallidos antes de cerrar la conexión
+MaxAuthTries 3
+
+# Número máximo de sesiones no autenticadas concurrentes
+MaxStartups 10:30:60
+
+# Número de sesiones simultáneas por conexión
+MaxSessions 2
+
+# ------------------------------------------------------------------------------
+# 4. Deshabilitación de Funcionalidades Innecesarias / Vectores de Salto
+# ------------------------------------------------------------------------------
+# Desactivar reenvío de entornos gráficos
+X11Forwarding no
+
+# Desactivar reenvío de puertos TCP y túneles si no son indispensables
+AllowTcpForwarding no
+AllowAgentForwarding no
+PermitTunnel no
+GatewayPorts no
+
+# ------------------------------------------------------------------------------
+# 5. Algoritmos Criptográficos y Suites de Cifrado Modernas
+# ------------------------------------------------------------------------------
+# Intercambio de llaves (KEX)
+KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512
+
+# Cifrados simétricos modernos autenticados
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com
+
+# Códigos de autenticación de mensajes (MACs)
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com
+
+# Algoritmos de llave de host aceptados
+HostKeyAlgorithms ssh-ed25519,ssh-ed25519-cert-01@openssh.com,rsa-sha2-512,rsa-sha2-256
+
+# ------------------------------------------------------------------------------
+# 6. Monitorización, Registro y Sesiones
+# ------------------------------------------------------------------------------
+# Registro detallado de autenticaciones y llaves utilizadas (útil para auditoría forense)
+LogLevel VERBOSE
+
+# Detección de conexiones colgadas y cierre tras inactividad
+ClientAliveInterval 300
+ClientAliveCountMax 2
+
+# Desactivar lectura del archivo .rhosts o shosts
+IgnoreRhosts yes
+HostbasedAuthentication no

@@ -1,0 +1,35 @@
+# ==============================================================================
+# Factorio Tech Solutions - Servicio de Ejecución de Copias de Seguridad
+# Ubicación habitual: /etc/systemd/system/factorio-backup.service
+# Invocado por: factorio-backup.timer o manualmente con:
+#   sudo systemctl start factorio-backup.service
+# ==============================================================================
+
+[Unit]
+Description=Factorio Tech Solutions - Tarea de Respaldo Criptográfico con Restic
+Documentation=https://github.com/factorio-tech/factorio-solutions/docs/copias-seguridad.md
+After=network.target local-fs.target
+ConditionPathExists=/opt/factorio/app/scripts/backup.sh
+
+[Service]
+Type=oneshot
+User=factorio
+Group=factorio
+WorkingDirectory=/opt/factorio/app
+
+# Cargar variables de entorno (RESTIC_REPOSITORY, RESTIC_PASSWORD, etc.)
+EnvironmentFile=-/opt/factorio/app/.env
+
+# Script de respaldo automatizado
+ExecStart=/opt/factorio/app/scripts/backup.sh
+
+# Seguridad del proceso
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=yes
+ReadWritePaths=/var/backups/factorio /opt/factorio/app/data /opt/factorio/app/logs /tmp
+
+# Salida estándar hacia journalctl
+StandardOutput=journal
+StandardError=journal

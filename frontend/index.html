@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Factorio Security Dashboard — Panel integral de ciberseguridad, bastionado y auditoría de sistemas Linux SMR">
+  <meta name="theme-color" content="#0a0e17">
+  <title>Factorio Security — Dashboard</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Core Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/charts.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+</head>
+<body>
+  <div id="app">
+    <!-- Collapsible Sidebar -->
+    <aside id="sidebar" class="sidebar" aria-label="Navegación lateral"></aside>
+    
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      <!-- Persistent Demo Banner -->
+      <div id="demo-banner" class="demo-banner hidden" role="alert">
+        <span>⚠️</span>
+        <span>Modo demostración — Los datos mostrados son sintéticos</span>
+      </div>
+
+      <!-- Sticky Top Navigation Bar -->
+      <header id="top-navbar-container"></header>
+
+      <!-- Dynamic Viewport Content -->
+      <main id="main-content" class="content-container" role="main"></main>
+    </div>
+
+    <!-- Toast Notifications Root -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <!-- Modal Backdrop Root -->
+    <div id="modal-backdrop" class="modal-backdrop" role="dialog" aria-hidden="true"></div>
+  </div>
+
+  <!-- Main ES Module Application Script -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

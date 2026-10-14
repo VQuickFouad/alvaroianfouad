@@ -1,0 +1,33 @@
+# ==============================================================================
+# Factorio Tech Solutions - Configuración de Promtail para Laboratorio Docker
+# Ubicación: deploy/docker/promtail-config.yml
+# ==============================================================================
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: factorio-app-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: factorio
+          env: docker-lab
+          __path__: /var/log/factorio/*.log
+
+  - job_name: nginx-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: nginx
+          env: docker-lab
+          __path__: /var/log/nginx/*.log

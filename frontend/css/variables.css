@@ -1,0 +1,65 @@
+:root {
+  /* Colors */
+  --bg-primary: #0a0e17;
+  --bg-secondary: #0f172a;
+  --bg-card: #111827;
+  --bg-card-hover: #172238;
+  --bg-input: #0b1120;
+  --bg-active: rgba(0, 212, 255, 0.12);
+  --bg-backdrop: rgba(10, 14, 23, 0.85);
+
+  /* Borders */
+  --border-color: #1e293b;
+  --border-focus: #00d4ff;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+
+  /* Accents */
+  --accent-cyan: #00d4ff;
+  --accent-cyan-hover: #38bdf8;
+  --accent-cyan-rgb: 0, 212, 255;
+  --accent-emerald: #10b981;
+  --accent-emerald-rgb: 16, 185, 129;
+  --accent-amber: #f59e0b;
+  --accent-amber-rgb: 245, 158, 11;
+  --accent-rose: #ef4444;
+  --accent-rose-rgb: 239, 68, 68;
+  --accent-purple: #8b5cf6;
+  --accent-blue: #3b82f6;
+
+  /* Typography */
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-inverse: #0a0e17;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+
+  /* Layout dimensions */
+  --sidebar-width: 260px;
+  --navbar-height: 64px;
+  --banner-height: 38px;
+  --border-radius-sm: 6px;
+  --border-radius: 10px;
+  --border-radius-lg: 16px;
+  --border-radius-full: 9999px;
+
+  /* Elevation & Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.6);
+  --shadow-cyan-glow: 0 0 15px rgba(0, 212, 255, 0.25);
+  --shadow-amber-glow: 0 0 15px rgba(245, 158, 11, 0.25);
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Z-index layers */
+  --z-sidebar: 40;
+  --z-navbar: 30;
+  --z-dropdown: 50;
+  --z-modal: 100;
+  --z-toast: 110;
+}

@@ -1,0 +1,82 @@
+# ==============================================================================
+# Factorio Tech Solutions - .gitignore
+# ==============================================================================
+
+# Entornos virtuales de Python
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+.python-version
+
+# Archivos compilados y bytecode de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.mypy_cache/
+.ruff_cache/
+
+# Variables de entorno y secretos (NUNCA SUBIR A GIT)
+.env
+.env.local
+.env.*.local
+deploy/docker/.env.production
+deploy/docker/secrets/
+*.pem
+*.key
+*.crt
+*.pfx
+*.passwd
+id_rsa
+id_ecdsa
+id_ed25519
+known_hosts
+
+# Bases de datos y almacenamiento persistente local
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+*.db
+*.sqlite
+*.sqlite3
+data/uploads/
+data/backups/
+data/restic-repo/
+
+# Logs del sistema y de la aplicación
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de configuración de IDEs y editores
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Directorios de compilación y empaquetado
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Docker y temporales
+.docker/
+docker-compose.override.yml
+*.pid
+node_modules/
+.env
+deploy/docker/certs/

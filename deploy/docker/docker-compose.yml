@@ -1,0 +1,135 @@
+# ==============================================================================
+# Factorio Tech Solutions - Pila de Laboratorio Completa (Docker Compose)
+# Ubicación: deploy/docker/docker-compose.yml
+# Ejecución:
+#   cd deploy/docker
+#   cp .env.docker .env
+#   Editar AUTH_SETUP_TOKEN antes de exponer el panel
+#   docker compose up -d
+# ==============================================================================
+
+version: '3.8'
+
+networks:
+  factorio_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+
+volumes:
+  factorio_data:
+    name: factorio_lab_data
+  factorio_logs:
+    name: factorio_lab_logs
+  loki_data:
+    name: factorio_loki_data
+  netdata_config:
+    name: factorio_netdata_config
+  netdata_share:
+    name: factorio_netdata_share
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. Aplicación Principal Factorio Tech Solutions
+  # ----------------------------------------------------------------------------
+  factorio-app:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    image: factorio-solutions:latest
+    container_name: factorio-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - factorio_net
+    volumes:
+      - factorio_data:/opt/factorio/app/data
+      - factorio_logs:/opt/factorio/app/logs
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ----------------------------------------------------------------------------
+  # 2. Proxy Inverso Nginx (Terminador Web y Rate Limiting)
+  # ----------------------------------------------------------------------------
+  nginx:
+    image: nginx:alpine
+    container_name: factorio-nginx
+    restart: unless-stopped
+    networks:
+      - factorio_net
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx-lab.conf:/etc/nginx/conf.d/default.conf:ro
+      - factorio_logs:/var/log/factorio:ro
+    depends_on:
+      factorio-app:
+        condition: service_healthy
+
+  # ----------------------------------------------------------------------------
+  # 3. Netdata - Monitorización y Métricas en Tiempo Real
+  # ----------------------------------------------------------------------------
+  netdata:
+    image: netdata/netdata:stable
+    container_name: factorio-netdata
+    restart: unless-stopped
+    hostname: factorio-lab-host
+    ports:
+      - "19999:19999"
+    networks:
+      - factorio_net
+    cap_add:
+      - SYS_PTRACE
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - netdata_config:/etc/netdata
+      - netdata_share:/var/lib/netdata
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /etc/os-release:/host/etc/os-release:ro
+    environment:
+      - DOCKER_HOST=docker-lab
+
+  # ----------------------------------------------------------------------------
+  # 4. Grafana Loki - Almacenamiento e Indexación de Registros
+  # ----------------------------------------------------------------------------
+  loki:
+    image: grafana/loki:latest
+    container_name: factorio-loki
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    networks:
+      - factorio_net
+    volumes:
+      - ./loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+
+  # ----------------------------------------------------------------------------
+  # 5. Promtail - Agente de Recolección y Envío de Logs a Loki
+  # ----------------------------------------------------------------------------
+  promtail:
+    image: grafana/promtail:latest
+    container_name: factorio-promtail
+    restart: unless-stopped
+    networks:
+      - factorio_net
+    volumes:
+      - ./promtail-config.yml:/etc/promtail/config.yml:ro
+      - factorio_logs:/var/log/factorio:ro
+      - /var/log:/var/log/host:ro
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki

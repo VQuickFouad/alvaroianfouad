@@ -1,0 +1,74 @@
+# ==============================================================================
+# Factorio Tech Solutions - Configuración de Cárceles Fail2ban
+# Ubicación habitual: /etc/fail2ban/jail.local
+# ==============================================================================
+
+[DEFAULT]
+# IPs y rangos que NUNCA deben ser bloqueados (Loopback y red de administración local)
+ignoreip = 127.0.0.1/8 ::1 192.168.1.0/24
+
+# Tiempo durante el cual la IP queda baneada (1 hora)
+bantime  = 1h
+
+# Ventana de tiempo en la cual se cuentan los intentos fallidos (10 minutos)
+findtime = 10m
+
+# Número de reintentos antes de aplicar el baneo
+maxretry = 5
+
+# Mecanismo de baneo interactuando directamente con UFW
+banaction = ufw
+banaction_allports = ufw
+
+# Backend de monitorización de logs
+backend = auto
+
+# Protocolo por defecto
+protocol = tcp
+
+# ------------------------------------------------------------------------------
+# Cárcel para el servicio SSH Endurecido
+# ------------------------------------------------------------------------------
+[sshd]
+enabled  = true
+port     = 22,2222
+filter   = sshd
+logpath  = /var/log/auth.log
+maxretry = 3
+findtime = 15m
+bantime  = 2h
+
+# ------------------------------------------------------------------------------
+# Cárcel para Intentos de Autenticación HTTP en Nginx
+# ------------------------------------------------------------------------------
+[nginx-http-auth]
+enabled  = true
+port     = http,https
+filter   = nginx-http-auth
+logpath  = /var/log/nginx/*error.log
+maxretry = 4
+bantime  = 1h
+
+# ------------------------------------------------------------------------------
+# Cárcel para Exceso de Peticiones (Rate Limit de Nginx superado reiteradamente)
+# ------------------------------------------------------------------------------
+[nginx-limit-req]
+enabled  = true
+port     = http,https
+filter   = nginx-limit-req
+logpath  = /var/log/nginx/*error.log
+maxretry = 10
+findtime = 2m
+bantime  = 30m
+
+# ------------------------------------------------------------------------------
+# Cárcel Dedicada para Factorio Tech Solutions
+# ------------------------------------------------------------------------------
+[factorio-auth]
+enabled  = true
+port     = 80,443,8000
+filter   = factorio
+logpath  = /opt/factorio/app/logs/factorio.log
+maxretry = 5
+findtime = 10m
+bantime  = 4h

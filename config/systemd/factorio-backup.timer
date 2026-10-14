@@ -1,0 +1,29 @@
+# ==============================================================================
+# Factorio Tech Solutions - Temporizador Systemd para Copias de Seguridad
+# Ubicación habitual: /etc/systemd/system/factorio-backup.timer
+# Activación:
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now factorio-backup.timer
+# Comprobar estado:
+#   systemctl list-timers factorio-backup.timer
+# ==============================================================================
+
+[Unit]
+Description=Factorio Tech Solutions - Temporizador Diario de Copias de Seguridad
+Documentation=https://github.com/factorio-tech/factorio-solutions/docs/copias-seguridad.md
+
+[Timer]
+# Ejecución diaria a las 02:30 AM
+OnCalendar=*-*-* 02:30:00
+
+# Retardo aleatorio de hasta 15 minutos para evitar picos de I/O concurrentes
+RandomizedDelaySec=15m
+
+# Si el servidor estaba apagado a la hora programada, ejecutar al encenderse
+Persistent=true
+
+# Servicio objetivo que se ejecutará al dispararse el timer
+Unit=factorio-backup.service
+
+[Install]
+WantedBy=timers.target

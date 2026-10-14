@@ -1,0 +1,68 @@
+# ==============================================================================
+# Factorio Tech Solutions - Unidad de Servicio Systemd
+# Ubicación habitual: /etc/systemd/system/factorio.service
+# Comandos de activación:
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now factorio.service
+# ==============================================================================
+
+[Unit]
+Description=Factorio Tech Solutions - Servidor de Gestión y Seguridad Web
+Documentation=https://github.com/factorio-tech/factorio-solutions
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=factorio
+Group=factorio
+WorkingDirectory=/opt/factorio/app
+
+# Variables de entorno
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=-/opt/factorio/app/.env
+
+# Comando de inicio del servidor ASGI (Uvicorn / Python)
+ExecStart=/opt/factorio/app/.venv/bin/python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 2 --access-log
+
+# Políticas de rearranque automático
+Restart=always
+RestartSec=5s
+TimeoutStartSec=30
+TimeoutStopSec=15
+
+# ------------------------------------------------------------------------------
+# Directivas de Seguridad y Aislamiento del Proceso (Systemd Hardening)
+# ------------------------------------------------------------------------------
+# Impide que el proceso y sus hijos puedan obtener nuevos privilegios (setuid/setgid)
+NoNewPrivileges=yes
+
+# Monta el sistema de archivos raíz como solo lectura, excepto las rutas permitidas
+ProtectSystem=strict
+
+# Oculta completamente los directorios personales de usuarios (/home, /root)
+ProtectHome=yes
+
+# Proporciona un directorio /tmp privado y aislado del resto del sistema
+PrivateTmp=yes
+
+# Prohíbe al proceso interactuar directamente con dispositivos físicos
+PrivateDevices=yes
+
+# Restringe la creación de espacios de nombres (namespaces) innecesarios
+RestrictNamespaces=yes
+
+# Prohíbe la modificación de parámetros del kernel en tiempo de ejecución
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+
+# Rutas con permiso de lectura y escritura indispensables para la operativa
+ReadWritePaths=/opt/factorio/app/data /opt/factorio/app/logs /tmp
+
+# Límites de recursos (prevenir fugas de memoria o DoS de descriptores)
+LimitNOFILE=65535
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target

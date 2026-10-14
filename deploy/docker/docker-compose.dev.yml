@@ -1,0 +1,27 @@
+# ==============================================================================
+# Factorio Tech Solutions - Sobrescritura para Desarrollo (Docker Compose Dev)
+# Ubicación: deploy/docker/docker-compose.dev.yml
+# Uso:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+# ==============================================================================
+
+version: '3.8'
+
+services:
+  factorio-app:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    environment:
+      - DEBUG=true
+      - DEMO_MODE=true
+      - LOG_LEVEL=DEBUG
+    volumes:
+      # Montaje del código en vivo para recarga instantánea sin reconstruir la imagen
+      - ../..:/opt/factorio/app
+      - /opt/factorio/app/.venv
+    command: ["python3", "scripts/start-dev.sh"]
+    ports:
+      - "8000:8000"
+
+  # En desarrollo rápido podemos omitir o simplificar servicios pesados si se desea

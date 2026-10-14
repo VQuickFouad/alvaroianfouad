@@ -1,0 +1,35 @@
+# ==============================================================================
+# Factorio Tech Solutions - Política de Rotación de Registros (logrotate)
+# Ubicación habitual: /etc/logrotate.d/factorio
+# Validar con: sudo logrotate -d /etc/logrotate.d/factorio
+# ==============================================================================
+
+/opt/factorio/app/logs/*.log {
+    # Rotación diaria
+    daily
+
+    # Conservar registros durante 30 días
+    rotate 30
+
+    # Comprimir archivos archivados con gzip para ahorrar espacio
+    compress
+
+    # Retrasar la compresión al siguiente ciclo para no bloquear escrituras activas
+    delaycompress
+
+    # No generar error si el archivo de log no existe en el momento de la rotación
+    missingok
+
+    # No rotar si el archivo de registro está completamente vacío
+    notifempty
+
+    # Permisos y propietario para los nuevos archivos generados
+    create 0640 factorio factorio
+
+    # Utilizar formato de fecha en el sufijo del archivo rotado (ej. .20261014.gz)
+    dateext
+    dateformat -%Y%m%d
+
+    # Evitar truncado conflictivo usando copytruncate si la app no tiene señal SIGHUP
+    copytruncate
+}

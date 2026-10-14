@@ -1,0 +1,74 @@
+services:
+  factorio-app:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    image: factorio-solutions:production
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    environment:
+      DEBUG: "false"
+      DEMO_MODE: "false"
+      SESSION_COOKIE_SECURE: "true"
+      XDG_CACHE_HOME: /tmp/.cache
+      AUTH_SETUP_TOKEN_FILE: /run/secrets/auth_setup_token
+      RESTIC_PASSWORD_FILE: /run/secrets/restic_password
+      SECRET_KEY_FILE: /run/secrets/app_secret_key
+    secrets:
+      - auth_setup_token
+      - restic_password
+      - app_secret_key
+    networks:
+      - factorio_net
+    volumes:
+      - factorio_data:/opt/factorio/app/data
+      - factorio_logs:/opt/factorio/app/logs
+    expose:
+      - "8000"
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  nginx:
+    image: nginx:1.28-alpine
+    restart: unless-stopped
+    networks:
+      - factorio_net
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-production.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      factorio-app:
+        condition: service_healthy
+
+networks:
+  factorio_net:
+    driver: bridge
+
+volumes:
+  factorio_data:
+    name: factorio_prod_data
+  factorio_logs:
+    name: factorio_prod_logs
+
+secrets:
+  auth_setup_token:
+    file: ./secrets/auth_setup_token
+  restic_password:
+    file: ./secrets/restic_password
+  app_secret_key:
+    file: ./secrets/app_secret_key
